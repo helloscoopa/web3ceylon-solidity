@@ -136,12 +136,12 @@ contract SimpleDigitalProfile {
     // Function to get endorsement summary with average ratings
     function getEndorsementSummary() external view returns (
         string[] memory skillNames,
-        uint8[] memory averageRatings,
+        uint16[] memory averageRatings,
         uint256[] memory endorsementCounts,
         uint256 totalSkills
     ) {
         skillNames = new string[](endorsedSkills.length);
-        averageRatings = new uint8[](endorsedSkills.length);
+        averageRatings = new uint16[](endorsedSkills.length);
         endorsementCounts = new uint256[](endorsedSkills.length);
 
         for (uint256 i = 0; i < endorsedSkills.length; i++) {
@@ -157,7 +157,7 @@ contract SimpleDigitalProfile {
                 for (uint256 j = 0; j < endorsements.length; j++) {
                     totalRating += endorsements[j].rating;
                 }
-                averageRatings[i] = uint8(totalRating / endorsements.length);
+                averageRatings[i] = uint16((totalRating * 100) / endorsements.length);
             }
         }
 
