@@ -9,7 +9,7 @@ contract SimpleDigitalProfile {
     address public owner;
 
     // Array to store user's skills
-    string[] public skills;
+    string[] private skills;
 
     // Struct to store self-assessed skill levels
     struct SkillEndorsement {
@@ -21,13 +21,13 @@ contract SimpleDigitalProfile {
     }
 
     // Mapping from skill name to array of endorsements
-    mapping(string => SkillEndorsement[]) public skillEndorsements;
+    mapping(string => SkillEndorsement[]) private skillEndorsements;
 
     // Mapping to check if an address has already endorsed a specific skill
-    mapping(string => mapping(address => bool)) public hasEndorsed;
+    mapping(string => mapping(address => bool)) private hasEndorsed;
 
     // Array to track which skills have been endorsed
-    string[] public endorsedSkills;
+    string[] private endorsedSkills;
 
     // Event emitted when profile is updated
     event ProfileUpdated(address indexed owner);
@@ -80,6 +80,16 @@ contract SimpleDigitalProfile {
         return skills.length;
     }
 
+    // Internal function to check if a skill exists in the owner's skills
+    function _skillExists(string calldata _skill) internal view returns (bool) {
+        for (uint256 i = 0; i < skills.length; i++) {
+            if (keccak256(abi.encodePacked(skills[i])) == keccak256(abi.encodePacked(_skill))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Function to endorse a skill
     function endorseSkill(
         string calldata _skill,
@@ -88,9 +98,10 @@ contract SimpleDigitalProfile {
     ) external {
         require(_rating >= 1 && _rating <= 10, "Rating must be between 1-10");
         require(!hasEndorsed[_skill][msg.sender], "You have already endorsed this skill");
+        require(_skillExists(_skill), "Skill does not exist in profile");
 
         // Check if this is the first endorsement for this skill
-        bool isNewSkill = skillEndorsements[_skill].length == 0;
+        bool isFirstEndorsementOfSkill = skillEndorsements[_skill].length == 0;
 
         // Create the endorsement
         skillEndorsements[_skill].push(SkillEndorsement({
@@ -105,7 +116,7 @@ contract SimpleDigitalProfile {
         hasEndorsed[_skill][msg.sender] = true;
 
         // Add to endorsed skills array if it's a new skill
-        if (isNewSkill) {
+        if (isFirstEndorsementOfSkill) {
             endorsedSkills.push(_skill);
         }
 
