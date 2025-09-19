@@ -9,7 +9,7 @@ contract SimpleDigitalProfile {
     address public owner;
 
     // Array to store user's skills
-    string[] public skills;
+    string[] private skills;
 
     // Struct to store self-assessed skill levels
     struct SkillEndorsement {
@@ -62,6 +62,11 @@ contract SimpleDigitalProfile {
         email = _email;
 
         emit ProfileUpdated(owner);
+    }
+
+    // Function to get all skills
+    function getSkills() external view returns (string[] memory) {
+        return skills;
     }
 
     // Function to update skills
