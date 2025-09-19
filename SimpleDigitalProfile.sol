@@ -9,11 +9,10 @@ contract SimpleDigitalProfile {
     address public owner;
 
     // Array to store user's skills
-    string[] private skills;
+    string[] public skills;
 
     // Struct to store self-assessed skill levels
     struct SkillEndorsement {
-        string skill;
         uint8 rating; // 1-10 scale
         string comment;
         uint256 timestamp;
@@ -21,9 +20,11 @@ contract SimpleDigitalProfile {
     }
 
     // Mapping from skill name to array of endorsements
+    // skill -> SkillEndorsement
     mapping(string => SkillEndorsement[]) private skillEndorsements;
 
     // Mapping to check if an address has already endorsed a specific skill
+    // skill -> address -> state
     mapping(string => mapping(address => bool)) private hasEndorsed;
 
     // Array to track which skills have been endorsed
@@ -105,7 +106,6 @@ contract SimpleDigitalProfile {
 
         // Create the endorsement
         skillEndorsements[_skill].push(SkillEndorsement({
-            skill: _skill,
             rating: _rating,
             comment: _comment,
             timestamp: block.timestamp,
